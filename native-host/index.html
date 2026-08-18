@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark light" />
+  <title>Safe Appearance Layer — Native Host</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <div>
+        <span class="eyebrow">Executable native reference</span>
+        <h1>Safe Appearance Layer</h1>
+      </div>
+      <div class="status-wrap">Transition <span id="transitionStatus" data-status="ready">ready</span></div>
+    </header>
+
+    <main class="workspace">
+      <section class="control-panel" aria-label="Appearance controls">
+        <div class="section-head">
+          <h2>Host appearance</h2>
+          <p>The host validates and renders. Themes never receive DOM or conversation authority.</p>
+        </div>
+
+        <div class="button-grid">
+          <button id="themeSoftGlass">Soft Glass</button>
+          <button id="themeMidnight">Midnight</button>
+          <label class="button file-button">Local image<input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp" /></label>
+          <button id="rollback" class="secondary">Rollback</button>
+        </div>
+
+        <button id="hostile" class="danger wide">Run hostile capability request</button>
+
+        <div class="boundary-card">
+          <strong>Preserved boundary</strong>
+          <span>Appearance ≠ Content ≠ Function ≠ Authentication ≠ Execution</span>
+        </div>
+
+        <div class="evidence-head">
+          <h2>Transition evidence</h2>
+          <span>No conversation text recorded</span>
+        </div>
+        <pre id="evidence" aria-live="polite"></pre>
+      </section>
+
+      <section id="nativeHost" class="native-host" aria-label="Native conversational host">
+        <div class="native-backdrop"></div>
+        <aside class="host-sidebar">
+          <div class="host-brand">SAL Native</div>
+          <button class="new-chat">＋ New chat</button>
+          <nav aria-label="Demo conversations">
+            <a href="#" aria-current="page">Appearance API</a>
+            <a href="#">Host invariants</a>
+            <a href="#">Rollback evidence</a>
+          </nav>
+          <div class="permission-note"><b>Theme provider</b><br />Declarative request only</div>
+        </aside>
+
+        <div class="conversation-surface">
+          <div class="conversation-header">
+            <div><span class="host-kicker">Native host renderer</span><h2>Appearance is host-owned</h2></div>
+            <span class="native-badge">No DOM injection</span>
+          </div>
+          <div id="messages" class="messages"></div>
+          <form id="chatForm" class="composer">
+            <input id="chatInput" maxlength="1200" autocomplete="off" placeholder="Ask about the native boundary…" />
+            <button type="submit" aria-label="Send">↑</button>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="approvalDialog">
+    <form method="dialog" class="approval-card">
+      <span class="eyebrow">User authority</span>
+      <h2 id="approvalTitle">Approve appearance?</h2>
+      <p>This request can change only the capabilities below. The host retains rendering, accessibility, conversation, authentication, and functional-control authority.</p>
+      <ul id="capabilityList"></ul>
+      <div class="dialog-actions">
+        <button id="deny" value="cancel" class="secondary">Deny</button>
+        <button id="approve" value="default">Approve appearance</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>

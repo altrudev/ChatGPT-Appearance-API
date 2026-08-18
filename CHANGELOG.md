@@ -1,12 +1,23 @@
 # Changelog
 
-## 0.1.1 — 2026-08-18
+## 0.2.0 — 2026-08-18
 
-- Fixed activation on ChatGPT tabs that were already open when the extension was installed.
-- Added safe idempotent adapter reinjection from the popup.
-- Added current ChatGPT host-surface token overrides with exact inline rollback.
-- Added html-level background fallback plus compatibility selectors for current surface wrappers.
-- Added regression tests for adapter attachment and surface application.
+- Added executable native host implementation with host-owned rendering.
+- Added user capability approval before appearance transitions.
+- Added opaque local asset registry and host-only asset resolution.
+- Added native transition evidence and exact rollback.
+- Added offline conversational host demo with appearance/chat isolation.
+- Added hostile capability-request demonstration.
+- Added DDC native-host audit and review.
+- Added restrictive local demo server CSP.
+- Expanded tests for native authority, asset, rollback, and conversation boundaries.
+
+## Extension 0.1.1 — 2026-08-18
+
+- Fixed activation on ChatGPT tabs opened before extension installation/reload.
+- Added safe active-tab adapter reinjection via `scripting` permission.
+- Hardened current ChatGPT surface rendering and exact inline-state recovery.
+- Fixed extension package filename to follow manifest version.
 
 ## 0.1.0 — 2026-08-17
 
