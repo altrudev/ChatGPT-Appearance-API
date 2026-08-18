@@ -8,7 +8,7 @@ const extension = path.join(root, "extension");
 const manifest = JSON.parse(fs.readFileSync(path.join(extension, "manifest.json"), "utf8"));
 const failures = [];
 
-const expectedPermissions = ["storage"];
+const expectedPermissions = ["storage", "scripting"];
 if (JSON.stringify(manifest.permissions || []) !== JSON.stringify(expectedPermissions)) {
   failures.push(`manifest permissions changed: ${JSON.stringify(manifest.permissions || [])}`);
 }

@@ -1,23 +1,46 @@
 /*
  * Safe Appearance Layer — ChatGPT reference adapter.
- * This stylesheet deliberately targets surfaces only. It does not hide,
- * reposition, or intercept functional controls.
+ * Appearance only: no elements are hidden, repositioned, intercepted, or read.
  */
 
-html[data-sal-enabled="true"],
-html[data-sal-enabled="true"] body {
-  background: transparent !important;
+html[data-sal-enabled="true"] {
+  background-color: var(--sal-bg-color) !important;
+  background-image:
+    linear-gradient(var(--sal-overlay-color), var(--sal-overlay-color)),
+    var(--sal-bg-image),
+    var(--sal-bg-gradient) !important;
+  background-position:
+    center center,
+    var(--sal-bg-position),
+    center center !important;
+  background-repeat:
+    no-repeat,
+    var(--sal-bg-repeat),
+    no-repeat !important;
+  background-size:
+    cover,
+    var(--sal-bg-size),
+    cover !important;
+  background-attachment: fixed, fixed, fixed !important;
+}
+
+html[data-sal-enabled="true"] body,
+html[data-sal-enabled="true"] body > div {
+  background-color: transparent !important;
 }
 
 html[data-sal-enabled="true"] body {
   isolation: isolate;
 }
 
+/* Blurred renderer. The html background above remains a fail-safe if the host
+   changes stacking behavior; these layers provide blur and overlay when the
+   normal browser stacking model is available. */
 html[data-sal-enabled="true"] body::before,
 html[data-sal-enabled="true"] body::after {
   content: "";
   position: fixed;
-  inset: -32px;
+  inset: -36px;
   pointer-events: none;
 }
 
@@ -29,7 +52,7 @@ html[data-sal-enabled="true"] body::before {
   background-repeat: var(--sal-bg-repeat), no-repeat;
   background-size: var(--sal-bg-size), cover;
   filter: blur(var(--sal-bg-blur));
-  transform: scale(1.02);
+  transform: scale(1.03);
 }
 
 html[data-sal-enabled="true"] body::after {
@@ -37,12 +60,13 @@ html[data-sal-enabled="true"] body::after {
   background: var(--sal-overlay-color);
 }
 
-/* Main conversation surfaces. Named ChatGPT surface tokens are preferred over
-   brittle generated class names. */
+/* Main conversation surfaces. ChatGPT's named host surface variables are
+   overridden by content.js; these selectors are a compatibility fallback. */
 html[data-sal-enabled="true"] main,
 html[data-sal-enabled="true"] [class*="bg-token-main-surface-primary"],
 html[data-sal-enabled="true"] [class~="bg-surface-primary"],
-html[data-sal-enabled="true"] [class*="bg-(--main-surface-primary)"] {
+html[data-sal-enabled="true"] [class*="bg-(--main-surface-primary)"],
+html[data-sal-enabled="true"] [class*="bg-[var(--main-surface-primary)]"] {
   background-color: var(--sal-main-surface) !important;
   backdrop-filter: blur(var(--sal-glass-blur));
   -webkit-backdrop-filter: blur(var(--sal-glass-blur));
@@ -52,14 +76,14 @@ html[data-sal-enabled="true"] [class*="bg-(--main-surface-primary)"] {
 html[data-sal-enabled="true"] nav[aria-label="Chat history"],
 html[data-sal-enabled="true"] aside,
 html[data-sal-enabled="true"] [class*="bg-token-sidebar-surface-primary"],
-html[data-sal-enabled="true"] [class*="bg-(--sidebar-surface-primary)"] {
+html[data-sal-enabled="true"] [class*="bg-(--sidebar-surface-primary)"],
+html[data-sal-enabled="true"] [class*="bg-[var(--sidebar-surface-primary)]"] {
   background-color: var(--sal-sidebar-surface) !important;
   backdrop-filter: blur(var(--sal-glass-blur));
   -webkit-backdrop-filter: blur(var(--sal-glass-blur));
 }
 
-/* Keep overlays, dialogs, menus, code blocks, and composer surfaces owned by
-   ChatGPT. SAL does not make authentication or functional UI translucent. */
+/* Keep functional overlays and composer surfaces host-owned. */
 html[data-sal-enabled="true"] [role="dialog"],
 html[data-sal-enabled="true"] [role="menu"],
 html[data-sal-enabled="true"] [role="listbox"],

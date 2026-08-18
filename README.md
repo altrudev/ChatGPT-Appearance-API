@@ -82,7 +82,7 @@ And deliberately excludes:
 - Authentication-surface modification
 - Functional-control interception
 
-The extension requests only Chrome's `storage` permission and host access for `https://chatgpt.com/*`.
+The extension requests Chrome's `storage` and `scripting` permissions plus host access for `https://chatgpt.com/*`. `scripting` is used only to attach the same local appearance adapter to a ChatGPT tab that was already open when the extension was installed; it does not add remote code or conversation access.
 
 ## Native Appearance API reference
 
@@ -128,6 +128,8 @@ Then:
 5. Open ChatGPT.
 6. Use the extension popup to choose a local background and appearance settings.
 
+As of v0.1.1, opening the popup also attaches the local appearance adapter to the currently active ChatGPT tab, so a tab that was already open before installation does not require a manual refresh.
+
 No account connection is required.
 
 ## Security model
@@ -168,7 +170,7 @@ No GitHub Actions workflow is required.
 
 ## Project status
 
-**v0.1.0 — public reference implementation.**
+**v0.1.1 — public reference implementation.**
 
 The browser reference client necessarily applies styling to the current ChatGPT web interface and may require adapter updates if the host UI changes. The native Appearance API is a reference design, not an existing or supported OpenAI API.
 
