@@ -1,0 +1,57 @@
+{
+  "methodology": "DDC transition governance",
+  "scope": "Safe Appearance Layer native-host v0.2.0",
+  "chain": [
+    "Authority",
+    "Intent",
+    "Preconditions",
+    "Execution boundary",
+    "Transition",
+    "Verification",
+    "Invariant preservation",
+    "Evidence",
+    "Recovery"
+  ],
+  "checks": [
+    {
+      "name": "Authority gate",
+      "status": "PASS",
+      "evidence": "native host delegates transition authorization to reference API validator/renderer contract"
+    },
+    {
+      "name": "Execution boundary",
+      "status": "PASS",
+      "evidence": "no arbitrary HTML/code execution path in native appearance runtime"
+    },
+    {
+      "name": "Resource boundary",
+      "status": "PASS",
+      "evidence": "appearance runtime has no external network primitive"
+    },
+    {
+      "name": "Asset authority",
+      "status": "PASS",
+      "evidence": "validator restricts local asset handles; host-only registry resolves object URLs"
+    },
+    {
+      "name": "Conversation isolation",
+      "status": "PASS",
+      "evidence": "appearance runtime neither imports chat runtime nor records conversation payloads"
+    },
+    {
+      "name": "Recovery",
+      "status": "PASS",
+      "evidence": "host keeps previous appearance state and exposes rollback"
+    },
+    {
+      "name": "Host containment",
+      "status": "PASS",
+      "evidence": "server enforces self-only connection policy and blocks objects/embedding"
+    }
+  ],
+  "verdict": "PASS_WITH_BOUNDED_RESIDUAL_UNCERTAINTY",
+  "residualUncertainty": [
+    "Production accessibility enforcement against arbitrary user imagery requires host contrast measurement beyond this reference demo.",
+    "Direct integration into ChatGPT requires an OpenAI-supported host appearance capability; this demo proves the host-side architecture, not deployment inside chatgpt.com."
+  ]
+}

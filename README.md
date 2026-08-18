@@ -9,33 +9,52 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/sal-hero.svg" alt="Safe Appearance Layer: default interface, themed reference client, and native Appearance API" width="100%" />
+  <img src="docs/assets/sal-hero.svg" alt="Safe Appearance Layer: compatibility client and native Appearance API" width="100%" />
 </p>
 
 > **Core invariant:** Appearance authority must not imply content authority, interface authority, authentication authority, or execution authority.
 
-## What this repository proves
+## What this repository now proves
 
-Safe Appearance Layer (SAL) contains two complementary implementations:
+Safe Appearance Layer (SAL) contains **three complementary layers**:
 
-1. **A working Chrome/Edge reference client for ChatGPT** that applies local backgrounds, transparency, blur, and readability controls today.
-2. **A vendor-neutral Appearance API reference design** showing how a host could provide the same capability natively without giving a theme arbitrary CSS, DOM, conversation, authentication, or execution access.
+1. **Executable native host** — a real host-owned Appearance API implementation with capability approval, opaque local assets, transition evidence, and exact rollback.
+2. **Working Chrome/Edge ChatGPT reference client** — a compatibility bridge that applies local backgrounds and controlled transparency to ChatGPT today.
+3. **Vendor-neutral Appearance API specification** — the platform contract a conversational AI host can expose without granting themes arbitrary CSS, DOM, conversation, authentication, or execution access.
 
-The browser extension is the compatibility bridge. The native API is the preferred security architecture.
+The browser extension proves the user experience on an existing host. The native demo proves the preferred authority architecture when the host itself owns rendering.
 
-### Try the visual demo
+## Run the native host
 
-Open [`docs/demo/index.html`](docs/demo/index.html) after cloning or downloading the repository. It is a self-contained interactive mockup with no external assets or network dependencies.
+```bash
+npm run check
+npm run demo:native
+```
 
-The demo lets you adjust conversation transparency, sidebar transparency, glass blur, readability overlay, and backdrop presets while the functional interface remains unchanged.
+Open `http://127.0.0.1:4173/native-host/`.
+
+The native demo runs offline with Node built-ins only. It demonstrates:
+
+- user approval of requested appearance capabilities;
+- host-owned rendering instead of DOM injection;
+- local JPG/PNG/WebP represented to the provider only as an opaque `asset://local/...` handle;
+- host-only object URL resolution;
+- transition evidence without conversation text;
+- exact rollback;
+- hostile capability rejection (`interface.hide-send-button`);
+- conversation state isolated from appearance state.
+
+See [`native-host/README.md`](native-host/README.md) and [`docs/DDC_NATIVE_HOST_REVIEW.md`](docs/DDC_NATIVE_HOST_REVIEW.md).
+
+### Visual reference demo
+
+The existing [`docs/demo/index.html`](docs/demo/index.html) remains a self-contained visual mockup showing appearance controls and surface behavior without external assets or network dependencies.
 
 ## The boundary
 
 <p align="center">
   <img src="docs/assets/permission-boundary.svg" alt="Theme provider to host policy to host UI permission boundary" width="100%" />
 </p>
-
-A native host implementation keeps the authority model explicit:
 
 ```text
 User Authority
@@ -44,9 +63,11 @@ Appearance Intent
     ↓
 Declared Capability Request
     ↓
+User Capability Approval
+    ↓
 Host Validation / Policy
     ↓
-Host-Rendered Appearance Transition
+Host-Owned Renderer
     ↓
 Verification + Invariant Checks
     ↓
@@ -57,36 +78,37 @@ Evidence + Reversible State
 
 A theme may request `background.image`. That does not authorize reading conversation text. A request for `surface.sidebar.opacity` does not authorize hiding sidebar controls. Unknown capabilities fail closed.
 
-## Working reference client
+## Executable native host
 
-The current Chrome/Edge extension demonstrates:
+The native implementation is not a browser skin. The host owns the rendering boundary and converts validated appearance state into a fixed set of presentation tokens. Theme/provider code receives no DOM handle and cannot supply arbitrary CSS, HTML, event handlers, authentication UI, or functional-control changes.
 
-- Local JPG, PNG, or WebP background images
-- Solid/gradient fallback backgrounds
-- Cover, contain, and tile fit modes
-- Background blur
-- Readability overlay
-- Conversation surface opacity
-- Sidebar surface opacity
-- Glass/backdrop blur
-- One-click reset
-- Local-only storage
+Local images cross the provider boundary as opaque handles:
 
-And deliberately excludes:
+```text
+User-selected File
+      ↓
+Host asset registry
+      ├── provider sees: asset://local/user-background-1
+      └── host resolves: blob:<host-owned-object-url>
+```
 
-- Analytics or telemetry
-- Network requests
-- Conversation parsing or extraction
-- Remote scripts
-- Arbitrary user/theme CSS
-- Authentication-surface modification
-- Functional-control interception
+The native host also keeps conversation state in a separate runtime module. Appearance transitions neither import nor receive the conversation runtime.
 
-The extension requests Chrome's `storage` and `scripting` permissions plus host access for `https://chatgpt.com/*`. `scripting` is used only to attach the same local appearance adapter to a ChatGPT tab that was already open when the extension was installed; it does not add remote code or conversation access.
+## Working ChatGPT reference client
+
+The Chrome/Edge compatibility client demonstrates local backgrounds, gradient fallback, blur, readability overlay, conversation/sidebar transparency, glass effects, and reset while deliberately excluding telemetry, remote network requests, conversation parsing, remote scripts, arbitrary theme CSS, authentication-surface changes, and functional-control interception.
+
+The extension requests:
+
+- `storage` — local appearance settings;
+- `scripting` — attach the local appearance adapter to an already-open ChatGPT tab;
+- host access only for `https://chatgpt.com/*`.
+
+The extension is a compatibility proof, not the preferred authority model.
 
 ## Native Appearance API reference
 
-The proposed API is declarative. A provider submits a narrow capability request; the host owns validation, rendering, accessibility enforcement, evidence, and rollback.
+The proposed API is declarative. A provider submits a narrow capability request; the host owns validation, rendering, accessibility enforcement, local asset resolution, evidence, and rollback.
 
 ```json
 {
@@ -103,64 +125,35 @@ The proposed API is declarative. A provider submits a narrow capability request;
     },
     "surfaces": {
       "conversationOpacity": 0.84,
-      "glassBlur": 10
+      "glassBlurPx": 10
     }
   }
 }
 ```
 
-Remote wallpaper URLs are rejected in the v0.1 local-only model. The host resolves opaque local asset handles and can preserve accessibility/readability without exposing the underlying asset or conversation data to the provider.
+Remote wallpaper URLs are rejected in the v0.1 local-only model. See [`docs/APPEARANCE_API.md`](docs/APPEARANCE_API.md).
 
-See [`docs/APPEARANCE_API.md`](docs/APPEARANCE_API.md) for the full reference specification.
+## DDC validation
 
-## Install the ChatGPT reference client
+```bash
+npm run ddc:audit
+```
+
+The DDC review evaluates:
+
+**Authority → Intent → Preconditions → Execution Boundary → Transition → Verification → Invariant Preservation → Evidence → Recovery**
+
+The native-host result is **PASS WITH BOUNDED RESIDUAL UNCERTAINTY**. Remaining uncertainty is explicit: production accessibility enforcement against arbitrary imagery and direct ChatGPT integration require host-specific implementation/testing.
+
+## Full checks
 
 ```bash
 npm run check
 ```
 
-Then:
+This runs unit/policy tests, the static security audit, and the DDC structural audit.
 
-1. Open `chrome://extensions/` or the equivalent Edge extensions page.
-2. Enable **Developer mode**.
-3. Choose **Load unpacked**.
-4. Select the `extension/` directory.
-5. Open ChatGPT.
-6. Use the extension popup to choose a local background and appearance settings.
-
-As of v0.1.1, opening the popup also attaches the local appearance adapter to the currently active ChatGPT tab, so a tab that was already open before installation does not require a manual refresh.
-
-No account connection is required.
-
-## Security model
-
-SAL treats every appearance change as a governed state transition:
-
-```text
-Authority → Intent → Preconditions → Capability Boundary → Transition
-→ Verification → Invariant Preservation → Evidence → Recovery
-```
-
-The native reference validator rejects unknown schema versions, unknown capabilities, unauthorized fields, remote image URLs, invalid values, and capability/value mismatches. Applied transitions return explicit invariant evidence and a rollback path.
-
-Read:
-
-- [`ARCHITECTURE.md`](ARCHITECTURE.md) — system architecture and authority model
-- [`THREAT_MODEL.md`](THREAT_MODEL.md) — protected assets, abuse cases, and controls
-- [`SECURITY.md`](SECURITY.md) — security invariants and reporting
-- [`docs/GOVERNANCE_REVIEW.md`](docs/GOVERNANCE_REVIEW.md) — transition-governance review
-- [`docs/OPENAI_PROPOSAL.md`](docs/OPENAI_PROPOSAL.md) — platform proposal
-- [`docs/PLATFORM_CONTEXT.md`](docs/PLATFORM_CONTEXT.md) — current platform context
-
-## Test and audit
-
-```bash
-npm run check
-```
-
-This runs the policy/validator tests and a static local audit that rejects network primitives, code-evaluation primitives, unexpected extension permissions, and accidental remote asset URLs.
-
-Package the extension with:
+Package the ChatGPT compatibility extension with:
 
 ```bash
 npm run package:extension
@@ -168,19 +161,25 @@ npm run package:extension
 
 No GitHub Actions workflow is required.
 
+## Documentation
+
+- [`ARCHITECTURE.md`](ARCHITECTURE.md)
+- [`THREAT_MODEL.md`](THREAT_MODEL.md)
+- [`SECURITY.md`](SECURITY.md)
+- [`docs/APPEARANCE_API.md`](docs/APPEARANCE_API.md)
+- [`docs/DDC_NATIVE_HOST_REVIEW.md`](docs/DDC_NATIVE_HOST_REVIEW.md)
+- [`docs/OPENAI_PROPOSAL.md`](docs/OPENAI_PROPOSAL.md)
+- [`docs/PLATFORM_CONTEXT.md`](docs/PLATFORM_CONTEXT.md)
+
 ## Project status
 
-**v0.1.1 — public reference implementation.**
+**SAL v0.2.0 — executable native host + ChatGPT compatibility client + reference API.**
 
-The browser reference client necessarily applies styling to the current ChatGPT web interface and may require adapter updates if the host UI changes. The native Appearance API is a reference design, not an existing or supported OpenAI API.
+Direct integration into ChatGPT itself still requires an OpenAI-supported host appearance capability. SAL's host-level appearance boundary is a proposed capability rather than an existing ChatGPT API.
 
 The visual demonstrations in this repository are illustrative reference interfaces, not official OpenAI UI.
 
 This project is not affiliated with or endorsed by OpenAI. ChatGPT is a trademark of OpenAI.
-
-## Contributing
-
-Contributions are welcome, especially around accessibility, host adapters, permission models, threat modeling, and portable appearance schemas. See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## License
 

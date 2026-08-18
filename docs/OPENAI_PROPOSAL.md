@@ -1,57 +1,95 @@
-# Proposal: Permissioned Appearance API for ChatGPT
+# Proposal: Host-Controlled Appearance API for ChatGPT
 
 ## Summary
 
-Introduce a host-controlled Appearance API that lets approved plugins or theme providers request narrow visual customization through declarative capabilities rather than arbitrary CSS or DOM access.
+Expose a narrow, permissioned Appearance API that allows approved themes or plugins to request user-controlled visual personalization without granting arbitrary CSS, DOM, conversation, authentication, or execution authority.
 
-The initial capability set can be deliberately small: backgrounds, gradients, surface opacity, and host-owned blur.
+The Safe Appearance Layer repository now includes both a working ChatGPT compatibility extension and an **executable native reference host** demonstrating how the safer host-owned version works in practice.
 
-## Why
+## Problem
 
-Users increasingly treat conversational AI as a persistent working environment. Appearance can support personalization, accessibility, focus, organizational identity, and creative context. Browser extensions can demonstrate demand, but they necessarily operate with broader page styling access than a first-party platform should require.
+Users can currently obtain deeper personalization only through browser extensions/userscripts with host-page styling authority. That is broader authority than a wallpaper, transparency, or accessibility theme actually needs.
 
-A native Appearance API can provide the same utility while keeping ChatGPT in control of rendering and security-sensitive UI.
+A host-native capability can make the safe path narrower than the workaround.
 
-## Security boundary
+## Proposed model
 
-**Appearance ≠ Content ≠ Function ≠ Authentication ≠ Execution**
-
-Granting a theme `background.image` must not grant access to conversation content. Granting `surface.sidebar.opacity` must not allow hiding or replacing sidebar controls. Authentication dialogs, security warnings, system notices, message content, and executable behavior remain outside the appearance namespace.
-
-## Suggested API shape
-
-A plugin declares capabilities and submits appearance tokens. ChatGPT validates the request and applies it through the host renderer.
-
-```json
-{
-  "schemaVersion": "0.1",
-  "capabilities": [
-    "background.image",
-    "surface.conversation.opacity"
-  ],
-  "appearance": {
-    "background": { "image": "asset://local/user-background" },
-    "surfaces": { "conversationOpacity": 0.84 }
-  }
-}
+```text
+User approval
+    ↓
+Theme declarative capability request
+    ↓
+Host validation and accessibility policy
+    ↓
+Host-owned rendering
+    ↓
+Transition evidence + rollback
 ```
 
-## Privacy
+The provider never receives the ChatGPT DOM or conversation simply because it is allowed to alter presentation.
 
-Local assets should remain local by default. A theme provider should receive an opaque asset handle, not the user's image bytes. Remote image URLs can be excluded from the first version entirely.
+## Initial capability namespace
+
+- `background.color`
+- `background.gradient`
+- `background.image`
+- `background.blur`
+- `surface.conversation.opacity`
+- `surface.sidebar.opacity`
+- `surface.glass.blur`
+
+No capability in the initial namespace changes functional-control visibility, event handling, authentication UI, message content, or executable behavior.
+
+## Local asset model
+
+For a local background image, ChatGPT can retain the bytes and expose only an opaque handle such as:
+
+```text
+asset://local/user-selected-background
+```
+
+A theme does not need to receive the image or a network URL. This avoids turning personalization into an implicit tracking or upload channel.
+
+## User-facing permissions
+
+An install/approval surface could state:
+
+**Can**
+- change background presentation;
+- change approved surface transparency;
+- change approved blur/decorative appearance tokens.
+
+**Cannot**
+- read conversations because of appearance permission;
+- change authentication UI;
+- hide or replace ChatGPT controls;
+- execute arbitrary CSS/JavaScript;
+- load remote tracking assets through the local-only capability.
 
 ## Accessibility
 
-ChatGPT should retain authority to enforce contrast, readable surfaces, reduced motion, and other accessibility constraints even when a theme requests more aggressive transparency.
+The host should remain authoritative for readability. A theme can request surface opacity or blur, but the host may raise opacity, add a scrim, or reject values when required to preserve accessibility.
 
-## Reference implementation
+## Evidence and recovery
 
-This repository includes:
+The host can record an appearance transition without recording conversation text: theme identifier, requested capabilities, applied/rejected values, policy version, invariant outcomes, and rollback state.
 
-- a working Chrome/Edge ChatGPT background client;
-- an allowlisted capability validator;
-- an example declarative schema;
-- transition evidence and rollback code;
-- threat model and hostile-input tests.
+Reset and rollback should always remain host-owned.
 
-The browser extension is the compatibility proof. The reference API is the safer target architecture.
+## Executable reference
+
+`native-host/` demonstrates the complete native transition path:
+
+1. user capability approval;
+2. canonical request validation;
+3. opaque local asset handling;
+4. host-owned rendering through a fixed presentation-token set;
+5. evidence generation;
+6. exact rollback;
+7. hostile capability rejection.
+
+This allows the security and UX model to be evaluated as running software rather than only as a proposal.
+
+## Core invariant
+
+> **Appearance authority must not imply content authority, interface authority, authentication authority, or execution authority.**
