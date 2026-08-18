@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Safe Appearance Layer — ChatGPT Reference Client",
+  "version": "0.1.0",
+  "description": "Local backgrounds and controlled transparency for ChatGPT. No telemetry, no network requests, no conversation parsing.",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://chatgpt.com/*"
+  ],
+  "action": {
+    "default_title": "Safe Appearance Layer",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chatgpt.com/*"
+      ],
+      "js": ["lib/policy.js", "content.js"],
+      "css": ["content.css"],
+      "run_at": "document_start"
+    }
+  ]
+}

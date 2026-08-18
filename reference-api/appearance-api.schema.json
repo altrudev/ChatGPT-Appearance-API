@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/safe-appearance-layer/appearance-api.schema.json",
+  "title": "Safe Appearance Layer Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "themeId", "capabilities", "appearance"],
+  "properties": {
+    "schemaVersion": { "const": "0.1" },
+    "themeId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,80}$"
+    },
+    "capabilities": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "background.color",
+          "background.gradient",
+          "background.image",
+          "background.blur",
+          "surface.conversation.opacity",
+          "surface.sidebar.opacity",
+          "surface.glass.blur"
+        ]
+      }
+    },
+    "appearance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "background": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "color": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "gradient": { "type": "string", "maxLength": 300 },
+            "image": { "type": "string", "pattern": "^asset://local/[A-Za-z0-9._-]+$" },
+            "blurPx": { "type": "number", "minimum": 0, "maximum": 30 }
+          }
+        },
+        "surfaces": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "conversationOpacity": { "type": "number", "minimum": 0.35, "maximum": 1 },
+            "sidebarOpacity": { "type": "number", "minimum": 0.35, "maximum": 1 },
+            "glassBlurPx": { "type": "number", "minimum": 0, "maximum": 30 }
+          }
+        }
+      }
+    }
+  }
+}

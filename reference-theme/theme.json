@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "0.1",
+  "themeId": "reference.soft-glass",
+  "capabilities": [
+    "background.color",
+    "background.gradient",
+    "background.image",
+    "background.blur",
+    "surface.conversation.opacity",
+    "surface.sidebar.opacity",
+    "surface.glass.blur"
+  ],
+  "appearance": {
+    "background": {
+      "color": "#15171a",
+      "gradient": "linear-gradient(135deg, #15171a 0%, #23262c 100%)",
+      "image": "asset://local/user-selected-background",
+      "blurPx": 2
+    },
+    "surfaces": {
+      "conversationOpacity": 0.84,
+      "sidebarOpacity": 0.9,
+      "glassBlurPx": 10
+    }
+  }
+}

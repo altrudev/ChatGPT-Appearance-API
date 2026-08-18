@@ -1,0 +1,71 @@
+/*
+ * Safe Appearance Layer — ChatGPT reference adapter.
+ * This stylesheet deliberately targets surfaces only. It does not hide,
+ * reposition, or intercept functional controls.
+ */
+
+html[data-sal-enabled="true"],
+html[data-sal-enabled="true"] body {
+  background: transparent !important;
+}
+
+html[data-sal-enabled="true"] body {
+  isolation: isolate;
+}
+
+html[data-sal-enabled="true"] body::before,
+html[data-sal-enabled="true"] body::after {
+  content: "";
+  position: fixed;
+  inset: -32px;
+  pointer-events: none;
+}
+
+html[data-sal-enabled="true"] body::before {
+  z-index: -2;
+  background-color: var(--sal-bg-color);
+  background-image: var(--sal-bg-image), var(--sal-bg-gradient);
+  background-position: var(--sal-bg-position), center center;
+  background-repeat: var(--sal-bg-repeat), no-repeat;
+  background-size: var(--sal-bg-size), cover;
+  filter: blur(var(--sal-bg-blur));
+  transform: scale(1.02);
+}
+
+html[data-sal-enabled="true"] body::after {
+  z-index: -1;
+  background: var(--sal-overlay-color);
+}
+
+/* Main conversation surfaces. Named ChatGPT surface tokens are preferred over
+   brittle generated class names. */
+html[data-sal-enabled="true"] main,
+html[data-sal-enabled="true"] [class*="bg-token-main-surface-primary"],
+html[data-sal-enabled="true"] [class~="bg-surface-primary"],
+html[data-sal-enabled="true"] [class*="bg-(--main-surface-primary)"] {
+  background-color: var(--sal-main-surface) !important;
+  backdrop-filter: blur(var(--sal-glass-blur));
+  -webkit-backdrop-filter: blur(var(--sal-glass-blur));
+}
+
+/* Sidebar surfaces. */
+html[data-sal-enabled="true"] nav[aria-label="Chat history"],
+html[data-sal-enabled="true"] aside,
+html[data-sal-enabled="true"] [class*="bg-token-sidebar-surface-primary"],
+html[data-sal-enabled="true"] [class*="bg-(--sidebar-surface-primary)"] {
+  background-color: var(--sal-sidebar-surface) !important;
+  backdrop-filter: blur(var(--sal-glass-blur));
+  -webkit-backdrop-filter: blur(var(--sal-glass-blur));
+}
+
+/* Keep overlays, dialogs, menus, code blocks, and composer surfaces owned by
+   ChatGPT. SAL does not make authentication or functional UI translucent. */
+html[data-sal-enabled="true"] [role="dialog"],
+html[data-sal-enabled="true"] [role="menu"],
+html[data-sal-enabled="true"] [role="listbox"],
+html[data-sal-enabled="true"] pre,
+html[data-sal-enabled="true"] form:has(textarea),
+html[data-sal-enabled="true"] form:has([contenteditable="true"]) {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}

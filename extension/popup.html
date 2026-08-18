@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Safe Appearance Layer</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Safe Appearance Layer</h1>
+        <p>Local ChatGPT background reference client</p>
+      </div>
+      <label class="switch" title="Enable appearance layer">
+        <input id="enabled" type="checkbox" />
+        <span></span>
+      </label>
+    </header>
+
+    <section>
+      <label class="file-label" for="imageFile">Choose local image</label>
+      <input id="imageFile" type="file" accept="image/png,image/jpeg,image/webp" />
+      <p class="hint">PNG, JPG, or WebP. Maximum 5 MB. Stored only in extension local storage.</p>
+      <button id="clearImage" class="secondary" type="button">Clear image</button>
+    </section>
+
+    <section class="grid-two">
+      <label>Fallback color
+        <input id="backgroundColor" type="color" />
+      </label>
+      <label>Fit
+        <select id="fit">
+          <option value="cover">Cover</option>
+          <option value="contain">Contain</option>
+          <option value="tile">Tile</option>
+        </select>
+      </label>
+    </section>
+
+    <section>
+      <label>Gradient
+        <input id="gradient" type="text" spellcheck="false" />
+      </label>
+    </section>
+
+    <section class="sliders">
+      <label>Overlay <output id="overlayOpacityOut"></output>
+        <input id="overlayOpacity" type="range" min="0" max="0.85" step="0.01" />
+      </label>
+      <label>Background blur <output id="backgroundBlurOut"></output>
+        <input id="backgroundBlur" type="range" min="0" max="30" step="1" />
+      </label>
+      <label>Conversation surface <output id="conversationOpacityOut"></output>
+        <input id="conversationOpacity" type="range" min="0.35" max="1" step="0.01" />
+      </label>
+      <label>Sidebar surface <output id="sidebarOpacityOut"></output>
+        <input id="sidebarOpacity" type="range" min="0.35" max="1" step="0.01" />
+      </label>
+      <label>Glass blur <output id="glassBlurOut"></output>
+        <input id="glassBlur" type="range" min="0" max="30" step="1" />
+      </label>
+    </section>
+
+    <footer>
+      <button id="reset" class="danger" type="button">Restore defaults</button>
+      <span id="status" role="status" aria-live="polite"></span>
+    </footer>
+  </main>
+
+  <script src="lib/policy.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
